@@ -10,7 +10,7 @@
 % This file is a template for a problem instance: the definition of an
 % initial state and of a goal. 
 
-% debug(on).	% need additional debug information at runtime?
+debug(on).	% need additional debug information at runtime?
 
 
 
@@ -24,9 +24,15 @@
 % --- Definition of the initial state ---------------------------------
 agent(a).
 car(c).
-at(a,pI,s0).
-at(c,pI,s0).
-location(pI).
+at(a,pl,s0).
+at(c,pl,s0).
+location(p).
+location(pl).
+location(d).
+connectWith(d,pl).
+connectWith(pl,d).
+connectWith(pl,p).
+connectWith(p,pl).
 
 
 
@@ -36,7 +42,7 @@ location(pI).
 
 % --- Goal condition that the planner will try to reach ---------------
 
-goal(S) :- parked(c,S),at(a,pI,S),at(c,d,S).					% fill in the goal definition
+goal(S) :- parked(c,S),at(a,d,S),at(c,pl,S).					% fill in the goal definition
 
 
 

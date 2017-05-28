@@ -25,12 +25,12 @@
 agent(a).
 at(a,p,s0).
 location(p).
-location(pI).
+location(pl).
 location(d).
-connectWith(d,pI).
-connectWith(pI,d).
-connectWith(pI,p).
-connectWith(p,pI).
+connectWith(d,pl).
+connectWith(pl,d).
+connectWith(pl,p).
+connectWith(p,pl).
 
 
 

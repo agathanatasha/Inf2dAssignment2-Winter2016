@@ -17,8 +17,18 @@
 % marks the predicates whose definition is spread across two or more
 % files
 %
-% :- multifile name/#, name/#, name/#, ...
-:- multifile agent(a), location(d), location(pI),location(p), connectWith(d,pI), connectWith(pI,p),car(c),at(x,y,s),parked(c,s),delivered(c,s).
+:- multifile name/#, name/#, name/#, ...
+:- multifile 
+agent(a),
+location(pl),
+location(d),
+connectWith(d,pl),
+connectWith(pl,d),
+connectWith(pl,p),
+connectWith(p,pl),
+at(a,_,_),
+car(Y),
+at(Y,_,_).
 
 
 
@@ -31,7 +41,7 @@
 primitive_action(move(_,_)).
 primitive_action(park(_)).
 primitive_action(deliver(_)).
-primitive_action(drive(_,_,_,_)).
+primitive_action(drive(_,_,_)).
 
 
 
@@ -40,9 +50,9 @@ primitive_action(drive(_,_,_,_)).
 %
 % poss( doSomething(...), S ) :- preconditions(..., S).
 poss(move(L1,L2),S) :- agent(a) , at(a,L1,S), connectWith(L1,L2), location(L1), location(L2).
-poss(park(X),S) :- agent(a), at(a,pI,S), car(X), at(X,pI,S),location(pI).
+poss(park(X),S) :- agent(a), at(a,pl,S), car(X), at(X,pl,S),location(pl).
 poss(deliver(X),S) :- agent(a), at(a,p,S), car(X), at(X,p,S),location(p).
-poss(drive(X,Y,L1,L2),S) :- agent(X), at(X,L1,S), car(Y), at(Y,L1,S), connectWith(L1,L2),location(L1),location(L2).
+poss(drive(X,L1,L2),S) :- agent(a), at(a,L1,S), car(X), at(X,L1,S), connectWith(L1,L2),location(L1),location(L2).
 
 
 % --- Successor state axioms ------------------------------------------
@@ -57,16 +67,19 @@ poss(drive(X,Y,L1,L2),S) :- agent(X), at(X,L1,S), car(Y), at(Y,L1,S), connectWit
         %(A = drive(X,_,Location),car(X));
         %at(X,Location,S), not(A = drive(_,_,_)).
 at(X,Location,result(A,S)):-
-        ((A = move(_,Location),agent(X)); (at(X,Location,S), not(A = move(_,_)), not(A = drive(_,_,_,_))));
-        (A = drive(X,_,_,Location); (at(X,Location,S), not(A = move(_,_)), not(A = drive(_,_,_,_))));
-        (A = drive(_,X,_,Location); (at(X,Location,S), not(A = drive(_,_,_,_)))).
+        ((A = move(_,Location),agent(X));
+        (at(X,Location,S), not(A = move(_,_)), not(A = drive(_,_,_))));
+        ((A = drive(X,_,Location), car(X)); 
+        (at(X,Location,S), not(A = drive(_,_,_))));
+        ((A = drive(_,_,Location), agent(X)); 
+        (at(X,Location,S), not(A = move(_,_)), not(A = drive(_,_,_)))).
 
 parked(X, result(A,S)) :-
-	A = park(X);
-	parked(X,S), not(A = park(_)).
+	(A = park(X), car(X));
+	(parked(X,S), not(A = park(_))).
 delivered(X,result(A,S)):-
 	A = deliver(X);
-	delivered(X,S), not(A = deliver(_)).
+	(delivered(X,S), not(A = deliver(_))).
 
 
 
